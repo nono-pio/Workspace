@@ -1,0 +1,16 @@
+<div class="ribon-items-top">
+  <app-clickable-icon
+    *ngFor="let item of itemTop"
+    [onclick]="item.onClick"
+    [alt]="item.label"
+    [src]="item.iconPath"
+  ></app-clickable-icon>
+</div>
+<div class="ribon-items-bottom">
+  <app-clickable-icon
+    *ngFor="let item of itemBottom"
+    [onclick]="item.onClick"
+    [alt]="item.label"
+    [src]="item.iconPath"
+  ></app-clickable-icon>
+</div>

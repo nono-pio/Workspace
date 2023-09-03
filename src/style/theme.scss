@@ -1,0 +1,74 @@
+/** SCSS COLORS */
+$color-black: #000000;
+$color-white: #ffffff;
+/** SCSS PRIMARY COLORS */
+$primary-100: #9500ff;
+$primary-200: #a539ff;
+$primary-300: #b457ff;
+$primary-400: #c171ff;
+$primary-500: #ce89ff;
+$primary-600: #d9a1ff;
+/** SCSS DARK THEME BACKGROUND COLORS */
+$bg-000: #000000;
+$bg-010: #1e1e1e;
+$bg-020: #252526;
+$bg-030: #2d2d2d;
+$bg-040: #323233;
+$bg-050: #333333;
+$bg-060: #3c3c3c;
+$bg-070: #454545;
+$bg-080: #797979;
+$bg-090: #aeafad;
+$bg-100: #ffffff;
+
+/** SCSS DARK THEME MIXED BACKGROUND COLORS */
+$bg-mixed-100: #2c193b;
+$bg-mixed-200: #412f4e;
+$bg-mixed-300: #564562;
+$bg-mixed-400: #6d5d77;
+$bg-mixed-500: #84768d;
+$bg-mixed-600: #9b90a2;
+/** SCSS COLORS TEXT */
+$color-text-50: #f8fafc;
+$color-text-100: #f1f5f9;
+$color-text-200: #e2e8f0;
+$color-text-300: #cbd5e1;
+$color-text-400: #94a3b8;
+$color-text-500: #64748b;
+$color-text-600: #475569;
+$color-text-700: #334155;
+$color-text-800: #1e293b;
+$color-text-900: #0f172a;
+$color-text-950: #020617;
+/** SCSS DARK THEME ACTION */
+$bg-hover: rgba(
+  $color: white,
+  $alpha: 0.05,
+);
+$bg-warning: #ff0000;
+/** SCSS DARK THEME ICON */
+$icon-color: #ffffff;
+$icon-size-s: 16px;
+$icon-size: 24px;
+$icon-size-l: 32px;
+/** SCSS TITLE BAR */
+$title-bar-bg-color: $bg-070;
+$title-bar-title-size: 16px;
+$title-bar-menu-item-size: 14px;
+/** SCSS UTIL */
+$cursor-select: pointer;
+/** SCSS CLICKABLE ICON */
+$clickable-icon-p: 5px;
+$clickable-icon-border-radius: 10px;
+$clickable-icon-size: $icon-size-l;
+
+/*
+
+Dark/Mixed - 100: For body background color
+Dark/Mixed - 200: For cards background color
+Dark/Mixed - 300: For chips buttons, dropdowns background color
+Dark/Mixed - 400: For sidebars, navbar background color
+Dark/Mixed - 500: For modal, dialogs background color
+Dark/Mixed - 600: For on background texts color
+
+*/

@@ -1,0 +1,19 @@
+@import "src/styles.scss";
+
+div {
+  padding: $clickable-icon-p;
+  aspect-ratio: 1/1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $clickable-icon-border-radius;
+
+  &:hover {
+    background-color: $bg-hover;
+  }
+
+  > img {
+    width: $clickable-icon-size;
+    height: $clickable-icon-size;
+  }
+}

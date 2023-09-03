@@ -1,0 +1,56 @@
+@import "src/styles.scss";
+
+:host {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100vw;
+  user-select: none;
+  font-size: $title-bar-menu-item-size;
+  background-color: $title-bar-bg-color;
+
+  > .title-bar-left {
+    display: flex;
+    height: 100%;
+    padding: 5px;
+    > div {
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      border-radius: 5px;
+      cursor: $cursor-select;
+
+      &:hover {
+        background-color: $bg-hover;
+      }
+    }
+  }
+
+  > .title-bar-center {
+    font-size: $title-bar-title-size;
+  }
+  > .title-bar-right {
+    > .title-bar-window-btn {
+      display: flex;
+
+      > div {
+        padding: 5px 10px;
+        cursor: $cursor-select;
+
+        > svg {
+          width: $icon-size;
+          height: $icon-size;
+          color: $icon-color;
+        }
+
+        &:hover:not(.warning) {
+          background-color: $bg-hover;
+        }
+        &:hover.warning {
+          background-color: $bg-warning;
+        }
+      }
+    }
+  }
+}
