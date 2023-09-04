@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 
 @Component({
-  selector: "app-spliter",
+  selector: "window-spliter",
   templateUrl: "./spliter.component.html",
   styleUrls: ["./spliter.component.scss"],
 })

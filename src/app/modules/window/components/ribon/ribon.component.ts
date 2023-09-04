@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
 
 @Component({
-  selector: "app-ribon",
+  selector: "window-ribon",
   templateUrl: "./ribon.component.html",
   styleUrls: ["./ribon.component.scss"],
 })

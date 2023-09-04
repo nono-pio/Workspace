@@ -9,6 +9,9 @@
     "Workspace": {
       "root": "",
       "schematics": {
+        "@schematics/angular:module": {
+          "path": "src/app/modules"
+        },
         "@schematics/angular:component": {
           "style": "scss",
           "path": "src/app/shared/components"

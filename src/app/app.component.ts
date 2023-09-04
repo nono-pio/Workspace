@@ -5,7 +5,6 @@ import {
   sendNotification,
 } from "@tauri-apps/api/notification";
 import { FsService } from "./core/services/fs.service";
-import { RibonItem } from "./shared/components/ribon/ribon.component";
 
 @Component({
   selector: "app-root",
@@ -14,21 +13,6 @@ import { RibonItem } from "./shared/components/ribon/ribon.component";
 })
 export class AppComponent implements OnInit {
   theme: "light" | "dark" = "dark";
-  ribonLeftTop: RibonItem[] = [
-    new RibonItem("assets\\angular.svg", "angular", () => {}),
-    new RibonItem("assets\\angular.svg", "angular", () => {}),
-    new RibonItem("assets\\angular.svg", "angular", () => {}),
-  ];
-  ribonLeftBottom: RibonItem[] = [
-    new RibonItem("assets\\tauri.svg", "tauri", () => {}),
-  ];
-
-  ribonRightTop: RibonItem[] = [
-    new RibonItem("assets\\angular.svg", "angular", () => {}),
-    new RibonItem("assets\\angular.svg", "angular", () => {}),
-    new RibonItem("assets\\angular.svg", "angular", () => {}),
-  ];
-  ribonRightBottom: RibonItem[] = [];
 
   constructor(private fs: FsService) {}
 
