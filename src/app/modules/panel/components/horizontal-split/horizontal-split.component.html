@@ -1,0 +1,6 @@
+<ng-container *ngFor="let panel of horizontalSplit.childs; let i = index">
+  <ng-container
+    [style]="{ width: horizontalSplit.sizes[i] }"
+    *ngComponentOutlet="panel.getPanelComponent(); inputs: panel"
+  ></ng-container>
+</ng-container>

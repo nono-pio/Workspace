@@ -4,6 +4,15 @@ use std::{
     path::{Path, PathBuf},
 };
 
+// region: ---Tauri Command
+
+#[tauri::command]
+pub async fn get_disk_entry_from_path(path: &str) -> Result<DiskEntry, String> {
+    get_disk_entry(path).map_err(|err| err.to_string())
+}
+
+// endregion
+
 // region: --- DiskEntry
 #[derive(serde::Serialize)]
 pub enum DiskEntry {
@@ -11,11 +20,11 @@ pub enum DiskEntry {
     Folder(Folder),
 }
 
-pub fn generate<P: AsRef<Path>>(path: P) -> Result<DiskEntry, Error> {
-    return generate_path_buf(path.as_ref().to_path_buf());
+pub fn get_disk_entry<P: AsRef<Path>>(path: P) -> Result<DiskEntry, Error> {
+    return get_disk_entry_path_buf(path.as_ref().to_path_buf());
 }
 
-pub fn generate_path_buf(buf_path: PathBuf) -> Result<DiskEntry, Error> {
+pub fn get_disk_entry_path_buf(buf_path: PathBuf) -> Result<DiskEntry, Error> {
     if buf_path.is_dir() {
         return Ok(DiskEntry::Folder(Folder::generate(buf_path)?));
     } else {
@@ -69,7 +78,7 @@ impl Folder {
 
         for entry_result in entries_result {
             if let Ok(entry) = entry_result {
-                entries.push(generate_path_buf(entry.path())?);
+                entries.push(get_disk_entry_path_buf(entry.path())?);
             }
         }
 

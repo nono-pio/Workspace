@@ -1,0 +1,50 @@
+<!-- If has diskEntry show it -->
+<ng-container *ngIf="diskEntry">
+  <ng-container
+    *ngTemplateOutlet="diskEntryTemplate; context: { diskentry: diskEntry }"
+  >
+  </ng-container>
+</ng-container>
+
+<!-- File or Folder -->
+<ng-template #diskEntryTemplate let-diskentry="diskentry">
+  <ng-container *ngIf="isFile(diskentry)">
+    <ng-container *ngTemplateOutlet="file; context: { file: diskentry }">
+    </ng-container>
+  </ng-container>
+  <ng-container *ngIf="!isFile(diskentry)">
+    <ng-container *ngTemplateOutlet="folder; context: { folder: diskentry }">
+    </ng-container>
+  </ng-container>
+</ng-template>
+
+<!-- Folder -->
+<ng-template #folder let-folder="folder">
+  <div class="folder">
+    <div class="metadata">
+      <img src="assets/images/arrow-down.svg" />
+      <img src="assets/images/folder.svg" />
+      <span class="name">{{ folder.name }}</span>
+    </div>
+    <div class="files">
+      <ng-container *ngFor="let folderDiskEntry of folder.diskEntries">
+        <ng-container
+          *ngTemplateOutlet="
+            diskEntryTemplate;
+            context: { diskentry: folderDiskEntry }
+          "
+        >
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+</ng-template>
+
+<!-- File -->
+<ng-template #file let-file="file">
+  <div class="file" draggable="true">
+    <img src="assets/images/file.svg" />
+    <span class="name">{{ file.name }}</span>
+    <span class="extension">{{ file.extension }}</span>
+  </div>
+</ng-template>

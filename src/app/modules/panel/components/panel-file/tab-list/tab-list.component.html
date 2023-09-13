@@ -1,0 +1,8 @@
+<div *ngFor="let file of files; let index = index" class="file">
+  <span>{{ file }}</span>
+  <app-clickable-icon
+    [click]="closeFile(index)"
+    src="assets\images\close.svg"
+    alt="CLOSE"
+  ></app-clickable-icon>
+</div>

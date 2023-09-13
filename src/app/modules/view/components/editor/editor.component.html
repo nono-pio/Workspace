@@ -1,0 +1,14 @@
+<div class="lines-number">
+  <span *ngFor="let _ of lines; let index = index">{{ index + 1 }}</span>
+</div>
+
+<div
+  class="lines"
+  contenteditable="true"
+  spellcheck="false"
+  (keypress)="change($event)"
+>
+  <div *ngFor="let line of lines">
+    <span>{{ line }}</span>
+  </div>
+</div>

@@ -7,12 +7,10 @@ import { invoke } from "@tauri-apps/api";
 export class FsService {
   constructor() {}
 
-  async getDiskEntry(path: string): Promise<DiskEntry> {
-    const diskEntry = await invoke<Object>("get_disk_entry", {
+  public async getDiskEntry(path: string): Promise<DiskEntry> {
+    const diskEntry = await invoke<Object>("get_disk_entry_from_path", {
       path: path,
     });
-
-    console.log(diskEntry);
 
     return this.getDiskEntryFromObject(diskEntry);
   }
@@ -42,9 +40,9 @@ export class FsService {
   }
 }
 
-type DiskEntry = File | Folder;
+export type DiskEntry = File | Folder;
 
-class File {
+export class File {
   constructor(
     public name: string | null,
     public extension: string | null,
@@ -52,6 +50,6 @@ class File {
   ) {}
 }
 
-class Folder {
+export class Folder {
   constructor(public name: string | null, public diskEntries: DiskEntry[]) {}
 }

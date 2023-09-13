@@ -1,6 +1,25 @@
+@import "src/styles.scss";
+
 :host {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 5px;
+  padding: 4px;
+
+  & .ribon-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 10px;
+
+    &:hover {
+      background-color: $bg-hover;
+    }
+
+    > img {
+      width: $icon-size;
+      height: $icon-size;
+    }
+  }
 }

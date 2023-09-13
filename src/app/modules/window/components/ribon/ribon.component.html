@@ -1,16 +1,18 @@
 <div class="ribon-items-top">
-  <app-clickable-icon
+  <div
     *ngFor="let item of itemTop"
-    [onclick]="item.onClick"
-    [alt]="item.label"
-    [src]="item.iconPath"
-  ></app-clickable-icon>
+    class="ribon-icon"
+    (onclick)="item.onClick()"
+  >
+    <img [alt]="item.label" [src]="item.iconPath" />
+  </div>
 </div>
 <div class="ribon-items-bottom">
-  <app-clickable-icon
+  <div
     *ngFor="let item of itemBottom"
-    [onclick]="item.onClick"
-    [alt]="item.label"
-    [src]="item.iconPath"
-  ></app-clickable-icon>
+    class="ribon-icon"
+    (onclick)="item.onClick()"
+  >
+    <img [alt]="item.label" [src]="item.iconPath" />
+  </div>
 </div>

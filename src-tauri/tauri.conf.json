@@ -12,6 +12,9 @@
   },
   "tauri": {
     "allowlist": {
+      "globalShortcut": {
+        "all": true
+      },
       "all": false,
       "window": {
         "all": true
@@ -46,10 +49,11 @@
         "title": "Workspace",
         "width": 600,
         "height": 500,
-        "alwaysOnTop": false,
+        "alwaysOnTop": true,
         "x": 928,
         "y": 0,
-        "decorations": false
+        "decorations": false,
+        "focus": false
       }
     ]
   }

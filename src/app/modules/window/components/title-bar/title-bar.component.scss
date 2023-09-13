@@ -6,7 +6,6 @@
   align-items: center;
   box-sizing: border-box;
   width: 100vw;
-  user-select: none;
   font-size: $title-bar-menu-item-size;
   background-color: $title-bar-bg-color;
 
@@ -38,7 +37,7 @@
         padding: 5px 10px;
         cursor: $cursor-select;
 
-        > svg {
+        > img {
           width: $icon-size;
           height: $icon-size;
           color: $icon-color;

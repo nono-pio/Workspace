@@ -1,4 +1,11 @@
 import { Component } from "@angular/core";
+import { appWindow } from "@tauri-apps/api/window";
+import {
+  Key,
+  KeyModifiers,
+  KeyboardShortcut,
+  KeyboardShortcutsService,
+} from "src/app/core/services/keyboard-shortcuts.service";
 import { RibonItem } from "./components/ribon/ribon.component";
 
 @Component({
@@ -7,6 +14,10 @@ import { RibonItem } from "./components/ribon/ribon.component";
   styleUrls: ["./window.component.scss"],
 })
 export class WindowComponent {
+  constructor(private keyboardShortcuts: KeyboardShortcutsService) {
+    SHORTCUTS.forEach((shortcut) => keyboardShortcuts.addShortcut(shortcut));
+  }
+
   ribonLeftTop: RibonItem[] = [
     new RibonItem("assets\\angular.svg", "angular", () => {}),
     new RibonItem("assets\\angular.svg", "angular", () => {}),
@@ -23,3 +34,12 @@ export class WindowComponent {
   ];
   ribonRightBottom: RibonItem[] = [];
 }
+
+const SHORTCUTS: KeyboardShortcut[] = [
+  new KeyboardShortcut(
+    "Quit",
+    [new Key("q", [KeyModifiers.CommandOrControl])],
+    "quit the window",
+    () => appWindow.close()
+  ),
+];

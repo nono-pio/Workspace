@@ -1,9 +1,4 @@
-import { Component, OnInit } from "@angular/core";
-import {
-  isPermissionGranted,
-  requestPermission,
-  sendNotification,
-} from "@tauri-apps/api/notification";
+import { Component, Injector, Input, OnInit } from "@angular/core";
 import { FsService } from "./core/services/fs.service";
 
 @Component({
@@ -21,15 +16,5 @@ export class AppComponent implements OnInit {
       "C:\\Users\\nolan\\OneDrive\\Bureau\\Project\\logisim"
     );
     console.log(project);
-
-    let permissionGranted = await isPermissionGranted();
-    if (!permissionGranted) {
-      const permission = await requestPermission();
-      permissionGranted = permission === "granted";
-    }
-    if (permissionGranted) {
-      sendNotification("Tauri is awesome!");
-      sendNotification({ title: "TAURI", body: "Tauri is awesome!" });
-    }
   }
 }

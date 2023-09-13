@@ -9,7 +9,7 @@ export class ClickableIconComponent {
   @Input("src")
   iconPath!: string;
   @Input()
-  onclick!: () => void;
+  click!: () => void;
   @Input()
   alt!: string;
 }

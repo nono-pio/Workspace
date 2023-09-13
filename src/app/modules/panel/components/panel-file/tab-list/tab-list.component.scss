@@ -1,0 +1,15 @@
+@import "src/styles.scss";
+
+:host {
+  display: flex;
+  align-items: center;
+
+  > .file {
+    height: 100%;
+    padding: 5px 10px;
+    border: 1px solid gray;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+}

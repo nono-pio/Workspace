@@ -1,0 +1,30 @@
+:host {
+  .folder {
+    > .metadata {
+      > img {
+        width: 16px;
+        height: 16px;
+      }
+      > .name {
+        font-size: small;
+      }
+    }
+
+    > .files {
+      padding-left: 10px;
+    }
+  }
+
+  .file {
+    > img {
+      width: 16px;
+      height: 16px;
+    }
+    > .name {
+      font-size: small;
+    }
+    > .extension {
+      font-size: small;
+    }
+  }
+}
