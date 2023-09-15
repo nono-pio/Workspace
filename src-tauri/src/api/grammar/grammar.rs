@@ -2,20 +2,26 @@ use crate::api::grammar::fragment::Fragment;
 use crate::api::grammar::rules::{Context, Rule, RuleStatus};
 use crate::api::grammar::token::{TokenDefinition, Tokenizer};
 
+#[derive(Debug)]
 pub struct Grammar {
+    name: Box<str>,
     tokens_definition: Vec<TokenDefinition>,
-    rules: Vec<Box<dyn Rule>>,
     fragments: Vec<Fragment>,
     main_fragment_index: usize,
 }
 
 impl Grammar {
-    pub fn new() -> Self {
+    pub fn new(
+        name: &str,
+        tokens_definition: Vec<TokenDefinition>,
+        fragments: Vec<Fragment>,
+        main_fragment: usize,
+    ) -> Self {
         Grammar {
-            tokens_definition: Vec::new(),
-            rules: Vec::new(),
-            fragments: Vec::new(),
-            main_fragment_index: 0,
+            name: Box::from(name),
+            tokens_definition,
+            fragments,
+            main_fragment_index: main_fragment,
         }
     }
 
@@ -28,21 +34,6 @@ impl Grammar {
             RuleStatus::Valid(context, _) => Some(context),
             RuleStatus::Invalid => None,
         }
-    }
-
-    pub fn add_token_definition(mut self, token_definition: TokenDefinition) -> Self {
-        self.tokens_definition.push(token_definition);
-        self
-    }
-
-    pub fn add_rule(mut self, rule: Box<dyn Rule>) -> Self {
-        self.rules.push(rule);
-        self
-    }
-
-    pub fn add_fragment(mut self, fragment: Fragment) -> Self {
-        self.fragments.push(fragment);
-        self
     }
 
     pub fn get_tokens_definition(&self) -> &Vec<TokenDefinition> {
@@ -58,6 +49,6 @@ impl Grammar {
     }
 
     pub fn get_rule_of_fragment(&self, index: usize) -> &dyn Rule {
-        self.rules[self.fragments[index].get_rule_index()].as_ref()
+        self.fragments[index].get_rule()
     }
 }

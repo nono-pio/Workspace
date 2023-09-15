@@ -8,6 +8,7 @@ mod error;
 mod event;
 mod model;
 
+use serde_json::json;
 use std::fs::create_dir;
 use std::fs::write;
 
@@ -15,10 +16,7 @@ use tauri::api::dir::read_dir;
 use tauri::api::path::data_dir;
 
 use crate::api::fs::get_disk_entry_from_path;
-use crate::api::grammar::fragment::Fragment;
-use crate::api::grammar::grammar::Grammar;
-use crate::api::grammar::rules::{FragmentRule, SequenceRule, TokenRule};
-use crate::api::grammar::token::TokenDefinition;
+use crate::api::grammar::json_to_grammar::json_to_grammar;
 
 const APP_DATA_FOLDER_NAME: &str = "Workspace";
 
@@ -40,22 +38,68 @@ async fn log_roaming_data(path_dir: &str) -> Result<String, String> {
 
 fn main() {
     // setup();
-    let grammar = Grammar::new()
-        .add_token_definition(TokenDefinition::new_regex("number", "^\\d+"))
-        .add_token_definition(TokenDefinition::new_keyword("test", "test"))
-        .add_token_definition(TokenDefinition::new_regex("text", "^[a-zA-Z]+"))
-        .add_token_definition(TokenDefinition::new_keyword("space", " "))
-        .add_fragment(Fragment::new("main fragment", 0))
-        .add_fragment(Fragment::new("test fragment", 1))
-        .add_fragment(Fragment::new("", 2))
-        .add_rule(Box::new(SequenceRule(vec![
-            Box::new(TokenRule(0)), // number
-            Box::new(TokenRule(3)), // space
-            Box::new(TokenRule(0)), // number
-        ]))) // rule main
-        .add_rule(Box::new(TokenRule(0))) // rule test
-        .add_rule(Box::new(TokenRule(0))); //
-    println!("{:?}", grammar.parse("12 21"));
+    let grammar = json_to_grammar(json!(
+    {
+        "grammarName": "Test",
+        "tokenDefinitions": {
+            "number": {
+                "regex": "[0-9]+"
+            },
+            "space": {
+                "regex": "[ ]+"
+            }
+        },
+        "fragments": {
+            "number": {
+                "rule": {
+                    "type" : "token",
+                    "value" : 0
+                }
+            },
+            "numberSpace": {
+                "rule": {
+                    "type": "sequence",
+                    "values": [
+                        {
+                            "type": "fragment",
+                            "value": 0
+                        },
+                        {
+                            "type": "fragment",
+                            "value": 3
+                        }
+                    ]
+                }
+            },
+            "numberSpaceOrNumber": {
+                "rule": {
+                    "type": "or",
+                    "values": [
+                        {
+                            "type": "fragment",
+                            "value": 1
+                        },
+                        {
+                            "type": "fragment",
+                            "value": 0
+                        }
+                    ]
+                }
+            },
+            "space": {
+                    "rule": {
+                        "type" : "token",
+                        "value" : 1
+                    }
+                },
+        }
+    }))
+    .unwrap();
+
+    println!("{:?}", grammar);
+
+    let result = grammar.parse("12 21");
+    println!("{:?}", result);
 }
 
 fn setup() {

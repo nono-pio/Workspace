@@ -1,16 +1,18 @@
 // region: ---Fragment
 
+use crate::api::grammar::rules::Rule;
+
 #[derive(Debug)]
 pub struct Fragment {
     name: Box<str>,
-    rule_index: usize,
+    rule: Box<dyn Rule>,
 }
 
 impl Fragment {
-    pub fn new(name: &str, rule_index: usize) -> Self {
+    pub fn new(name: &str, rule: Box<dyn Rule>) -> Self {
         Fragment {
             name: Box::from(name),
-            rule_index,
+            rule,
         }
     }
 
@@ -18,8 +20,8 @@ impl Fragment {
         &self.name
     }
 
-    pub fn get_rule_index(&self) -> usize {
-        self.rule_index
+    pub fn get_rule(&self) -> &dyn Rule {
+        self.rule.as_ref()
     }
 }
 

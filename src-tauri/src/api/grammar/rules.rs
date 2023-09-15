@@ -1,4 +1,5 @@
 use super::{grammar::Grammar, token::Tokenizer};
+use std::fmt::Debug;
 
 // region: ---Rule Status
 #[derive(Debug)]
@@ -20,7 +21,10 @@ pub enum Context {
 // endregion
 
 // region: ---Rule Trait
-pub trait Rule {
+pub trait Rule
+where
+    Self: Debug,
+{
     fn parse(&self, tokenizer: &mut Tokenizer, grammar: &Grammar, index_start: usize)
         -> RuleStatus;
 }
@@ -28,7 +32,7 @@ pub trait Rule {
 // endregion
 
 // region: ---Token
-
+#[derive(Debug)]
 pub struct TokenRule(pub usize); // index of the token definition in the grammar
 #[derive(Debug)]
 pub struct TokenContext(usize, String);
@@ -52,7 +56,7 @@ impl Rule for TokenRule {
 // endregion
 
 // region: ---Fragment
-
+#[derive(Debug)]
 pub struct FragmentRule(pub usize); // index of the fragment in the grammar
 #[derive(Debug)]
 
@@ -80,7 +84,7 @@ impl Rule for FragmentRule {
 // endregion
 
 // region: ---Sequence
-
+#[derive(Debug)]
 pub struct SequenceRule(pub Vec<Box<dyn Rule>>); // index of the fragment in the grammar
 #[derive(Debug)]
 
@@ -118,7 +122,7 @@ impl Rule for SequenceRule {
 // endregion
 
 // region: ---Or
-
+#[derive(Debug)]
 pub struct OrRule(pub Vec<Box<dyn Rule>>);
 #[derive(Debug)]
 
@@ -151,8 +155,8 @@ impl Rule for OrRule {
 // endregion
 
 // region: ---Optional
-
-pub struct OptionalRule(Box<dyn Rule>);
+#[derive(Debug)]
+pub struct OptionalRule(pub Box<dyn Rule>);
 #[derive(Debug)]
 
 pub struct OptionalContext(Box<Option<Context>>);
