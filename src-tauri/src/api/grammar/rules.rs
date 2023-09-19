@@ -1,5 +1,5 @@
 use super::{grammar::Grammar, token::Tokenizer};
-use std::fmt::Debug;
+use std::fmt::{Debug, Formatter};
 
 // region: ---Rule Status
 #[derive(Debug)]
@@ -10,7 +10,6 @@ pub enum RuleStatus {
 // endregion
 
 // region: ---Context Enum
-#[derive(Debug)]
 pub enum Context {
     Token(TokenContext),
     Fragment(FragmentContext),
@@ -18,6 +17,19 @@ pub enum Context {
     Or(OrContext),
     Optional(OptionalContext),
 }
+
+impl Debug for Context {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Context::Token(token_context) => write!(f, "{:?}", token_context),
+            Context::Fragment(fragment_context) => write!(f, "{:?}", fragment_context),
+            Context::Sequence(sequence_context) => write!(f, "{:?}", sequence_context),
+            Context::Or(or_context) => write!(f, "{:?}", or_context),
+            Context::Optional(optional_context) => write!(f, "{:?}", optional_context),
+        }
+    }
+}
+
 // endregion
 
 // region: ---Rule Trait
@@ -34,8 +46,12 @@ where
 // region: ---Token
 #[derive(Debug)]
 pub struct TokenRule(pub usize); // index of the token definition in the grammar
-#[derive(Debug)]
 pub struct TokenContext(usize, String);
+impl Debug for TokenContext {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self.1)
+    }
+}
 impl Rule for TokenRule {
     fn parse(
         &self,
@@ -58,10 +74,13 @@ impl Rule for TokenRule {
 // region: ---Fragment
 #[derive(Debug)]
 pub struct FragmentRule(pub usize); // index of the fragment in the grammar
-#[derive(Debug)]
 
 pub struct FragmentContext(usize, Box<Context>); // index of the fragment in the grammar and the context of the fragment
-
+impl Debug for FragmentContext {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self.1)
+    }
+}
 impl Rule for FragmentRule {
     fn parse(
         &self,

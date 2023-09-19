@@ -65,6 +65,13 @@ impl TokenDefinition {
             pattern: Pattern::Keyword(Box::from(keyword)),
         }
     }
+    
+    pub fn new(name: &str, pattern: Pattern) -> Self {
+        TokenDefinition {
+            name: Box::from(name),
+            pattern,
+        }
+    }
 
     pub fn name(&self) -> &str {
         self.name.as_ref()

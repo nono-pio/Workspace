@@ -42,55 +42,34 @@ fn main() {
     {
         "grammarName": "Test",
         "tokenDefinitions": {
-            "number": {
-                "regex": "[0-9]+"
-            },
-            "space": {
-                "regex": "[ ]+"
-            }
+            "NUMBER": "[0-9]+",
+            "SPACE": "[ ]+",
+            "DOT": "."
         },
         "fragments": {
             "number": {
                 "rule": {
-                    "type" : "token",
-                    "value" : 0
+                    "type": "or",
+                    "values": [
+                        ["NUMBER", "DOT", "NUMBER"],
+                        "NUMBER",
+                    ]
                 }
             },
             "numberSpace": {
-                "rule": {
-                    "type": "sequence",
-                    "values": [
-                        {
-                            "type": "fragment",
-                            "value": 0
-                        },
-                        {
-                            "type": "fragment",
-                            "value": 3
-                        }
-                    ]
-                }
+                "rule": [ "number", "space" ]
             },
             "numberSpaceOrNumber": {
                 "rule": {
                     "type": "or",
                     "values": [
-                        {
-                            "type": "fragment",
-                            "value": 1
-                        },
-                        {
-                            "type": "fragment",
-                            "value": 0
-                        }
+                        "numberSpace",
+                        "number"
                     ]
                 }
             },
             "space": {
-                    "rule": {
-                        "type" : "token",
-                        "value" : 1
-                    }
+                    "rule": "SPACE"
                 },
         }
     }))
@@ -98,8 +77,11 @@ fn main() {
 
     println!("{:?}", grammar);
 
-    let result = grammar.parse("12 21");
-    println!("{:?}", result);
+    let result = grammar.parse("1.2 21");
+    match result {
+        Some(context) => println!("{:?}", context),
+        None => println!("No match"),
+    }
 }
 
 fn setup() {
