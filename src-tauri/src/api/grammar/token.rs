@@ -65,7 +65,7 @@ impl TokenDefinition {
             pattern: Pattern::Keyword(Box::from(keyword)),
         }
     }
-    
+
     pub fn new(name: &str, pattern: Pattern) -> Self {
         TokenDefinition {
             name: Box::from(name),
@@ -90,7 +90,7 @@ pub struct Tokenizer<'a> {
     tokens: Vec<Token<'a>>,                      // tokens
     current_position: (usize, usize),            //position
 }
-
+// TODO: add WS token
 impl<'a> Tokenizer<'a> {
     pub fn new(text: &'a str, tokens_definition: &'a Vec<TokenDefinition>) -> Tokenizer<'a> {
         Tokenizer {

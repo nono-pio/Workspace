@@ -16,6 +16,7 @@ pub enum Context {
     Sequence(SequenceContext),
     Or(OrContext),
     Optional(OptionalContext),
+    Loop(LoopContext),
 }
 
 impl Debug for Context {
@@ -26,6 +27,7 @@ impl Debug for Context {
             Context::Sequence(sequence_context) => write!(f, "{:?}", sequence_context),
             Context::Or(or_context) => write!(f, "{:?}", or_context),
             Context::Optional(optional_context) => write!(f, "{:?}", optional_context),
+            Context::Loop(loop_context) => write!(f, "{:?}", loop_context),
         }
     }
 }
@@ -105,9 +107,13 @@ impl Rule for FragmentRule {
 // region: ---Sequence
 #[derive(Debug)]
 pub struct SequenceRule(pub Vec<Box<dyn Rule>>); // index of the fragment in the grammar
-#[derive(Debug)]
-
 pub struct SequenceContext(Vec<Context>); // index of the fragment in the grammar and the context of the fragment
+
+impl Debug for SequenceContext {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self.0)
+    }
+}
 
 impl Rule for SequenceRule {
     fn parse(
@@ -197,6 +203,187 @@ impl Rule for OptionalRule {
                 Context::Optional(OptionalContext(Box::new(None))),
                 index_start,
             ),
+        }
+    }
+}
+
+// endregion
+
+// region: ---Loop
+#[derive(Debug)]
+pub struct LoopRule {
+    pub rule: Box<dyn Rule>,
+    pub separator: Option<Box<dyn Rule>>,
+    pub min: usize,
+    pub max: usize,
+}
+#[derive(Debug)]
+pub struct LoopContext(
+    Vec<Context>,         /*Values*/
+    Option<Vec<Context>>, /*Separators*/
+);
+
+impl LoopRule {
+    pub fn new_min(rule: Box<dyn Rule>, min: usize, separator: Option<Box<dyn Rule>>) -> LoopRule {
+        LoopRule {
+            rule,
+            min,
+            max: usize::MAX,
+            separator,
+        }
+    }
+
+    pub fn new_min_max(
+        rule: Box<dyn Rule>,
+        min: usize,
+        max: usize,
+        separator: Option<Box<dyn Rule>>,
+    ) -> LoopRule {
+        LoopRule {
+            rule,
+            min,
+            max,
+            separator,
+        }
+    }
+
+    pub fn new_max(rule: Box<dyn Rule>, max: usize, separator: Option<Box<dyn Rule>>) -> LoopRule {
+        LoopRule {
+            rule,
+            min: 0,
+            max,
+            separator,
+        }
+    }
+
+    pub fn new_zero_or_more(rule: Box<dyn Rule>, separator: Option<Box<dyn Rule>>) -> LoopRule {
+        LoopRule {
+            rule,
+            min: 0,
+            max: usize::MAX,
+            separator,
+        }
+    }
+
+    pub fn new_one_or_more(rule: Box<dyn Rule>, separator: Option<Box<dyn Rule>>) -> LoopRule {
+        LoopRule {
+            rule,
+            min: 1,
+            max: usize::MAX,
+            separator,
+        }
+    }
+
+    fn parse_without_separator(
+        &self,
+        tokenizer: &mut Tokenizer,
+        grammar: &Grammar,
+        index_start: usize,
+    ) -> RuleStatus {
+        let mut context_values = Vec::new();
+        let mut index = index_start;
+
+        while context_values.len() < self.max {
+            let rule_status = self.rule.parse(tokenizer, grammar, index);
+            match rule_status {
+                RuleStatus::Valid(context, index_end) => {
+                    index = index_end;
+                    context_values.push(context);
+                }
+                RuleStatus::Invalid => break,
+            }
+        }
+
+        if context_values.len() < self.min {
+            return RuleStatus::Invalid;
+        }
+
+        RuleStatus::Valid(Context::Loop(LoopContext(context_values, None)), index)
+    }
+
+    pub fn accept_empty(&self) -> bool {
+        self.min == 0
+    }
+
+    fn parse_with_separator(
+        &self,
+        tokenizer: &mut Tokenizer,
+        grammar: &Grammar,
+        index_start: usize,
+    ) -> RuleStatus {
+        let mut context_values = Vec::new();
+        let mut context_separators = Vec::new();
+        let mut index = index_start;
+
+        let separator = self.separator.as_ref().unwrap();
+
+        // parse first value
+        let rule_status = self.rule.parse(tokenizer, grammar, index);
+        match rule_status {
+            RuleStatus::Valid(context, index_end) => {
+                index = index_end;
+                context_values.push(context);
+            }
+            RuleStatus::Invalid => {
+                return if self.accept_empty() {
+                    RuleStatus::Valid(
+                        Context::Loop(LoopContext(context_values, Some(context_separators))),
+                        index,
+                    )
+                } else {
+                    RuleStatus::Invalid
+                }
+            }
+        }
+
+        while context_values.len() < self.max {
+            let separator_index_end: usize;
+            let separator_context: Context;
+
+            // parse separator
+            let rule_status = separator.parse(tokenizer, grammar, index);
+            match rule_status {
+                RuleStatus::Valid(context, index_end) => {
+                    separator_index_end = index_end;
+                    separator_context = context;
+                }
+                RuleStatus::Invalid => break,
+            }
+            // parse value
+            let rule_status = self.rule.parse(tokenizer, grammar, separator_index_end);
+            match rule_status {
+                RuleStatus::Valid(context, index_end) => {
+                    index = index_end;
+                    context_values.push(context);
+                }
+                RuleStatus::Invalid => break,
+            }
+
+            // add separator if value after
+            context_separators.push(separator_context);
+        }
+
+        if context_values.len() < self.min {
+            return RuleStatus::Invalid;
+        }
+
+        RuleStatus::Valid(
+            Context::Loop(LoopContext(context_values, Some(context_separators))),
+            index,
+        )
+    }
+}
+impl Rule for LoopRule {
+    fn parse(
+        &self,
+        tokenizer: &mut Tokenizer,
+        grammar: &Grammar,
+        index_start: usize,
+    ) -> RuleStatus {
+        if self.separator.is_some() {
+            self.parse_with_separator(tokenizer, grammar, index_start)
+        } else {
+            self.parse_without_separator(tokenizer, grammar, index_start)
         }
     }
 }

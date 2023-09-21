@@ -1,7 +1,7 @@
 use crate::api::grammar::fragment::Fragment;
 use crate::api::grammar::grammar::Grammar;
 use crate::api::grammar::rules::{
-    FragmentRule, OptionalRule, OrRule, Rule, SequenceRule, TokenRule,
+    FragmentRule, LoopRule, OptionalRule, OrRule, Rule, SequenceRule, TokenRule,
 };
 use crate::api::grammar::token::{Pattern, TokenDefinition};
 use regex::Regex;
@@ -79,10 +79,15 @@ pub fn json_to_grammar(json: Value) -> Result<Grammar, Error> {
     let (token_definitions, tokens_index_map) =
         json_to_tokens_definition(json.get("tokenDefinitions").unwrap())?;
 
-    let fragments = json_to_fragments(json.get("fragments").unwrap(), tokens_index_map)?;
-
-    // TODO: main fragment
-    Ok(Grammar::new(grammar_name, token_definitions, fragments, 2))
+    let (fragments, index_main_fragment) =
+        json_to_fragments(json.get("fragments").unwrap(), tokens_index_map)?;
+    
+    Ok(Grammar::new(
+        grammar_name,
+        token_definitions,
+        fragments,
+        index_main_fragment,
+    ))
 }
 
 // region ---TokenDefinition
@@ -147,7 +152,7 @@ fn string_to_pattern(string: &String) -> Result<Pattern, Error> {
 fn json_to_fragments(
     json: &Value,
     tokens_index_map: HashMap<String, usize>,
-) -> Result<Vec<Fragment>, Error> {
+) -> Result<(Vec<Fragment>, usize), Error> {
     let fragment_map = json.as_object().unwrap();
 
     let mut index = 0;
@@ -161,12 +166,17 @@ fn json_to_fragments(
 
     let grammar_data = GrammarData::new(tokens_index_map, fragment_index_map);
 
+    let mut index_main_fragment = 0;
     let mut fragments = Vec::with_capacity(fragment_map.len());
     for (name, fragment) in fragment_map {
-        fragments.push(json_to_fragment(fragment, name, &grammar_data)?);
+        let (fragment, is_main_fragment) = json_to_fragment(fragment, name, &grammar_data)?;
+        fragments.push(fragment);
+        if is_main_fragment {
+            index_main_fragment = fragments.len() - 1;
+        }
     }
 
-    Ok(fragments)
+    Ok((fragments, index_main_fragment))
 }
 
 ///
@@ -178,9 +188,13 @@ fn json_to_fragment(
     json: &Value,
     name: &str,
     grammar_data: &GrammarData,
-) -> Result<Fragment, Error> {
+) -> Result<(Fragment, bool), Error> {
     let rule = json_to_rule(json.get("rule").unwrap(), grammar_data)?;
-    Ok(Fragment::new(name, rule))
+    let is_main_fragment = json
+        .get("main")
+        .map(|is_main| is_main.as_bool().unwrap_or(false))
+        .unwrap_or(false);
+    Ok((Fragment::new(name, rule), is_main_fragment))
 }
 
 // region ---Rule
@@ -229,6 +243,7 @@ fn json_to_rule(json: &Value, grammar_data: &GrammarData) -> Result<Box<dyn Rule
                 "sequence" => json_to_sequence_rule(&json, grammar_data),
                 "or" => json_to_or_rule(&json, grammar_data),
                 "optional" => json_to_optional_rule(&json, grammar_data),
+                "loop" => json_to_loop_rule(&json, grammar_data),
                 _ => Err(Error::UnknownRuleType),
             }
         }
@@ -268,6 +283,26 @@ fn json_to_sequence_rule(
     grammar_data: &GrammarData,
 ) -> Result<Box<dyn Rule>, Error> {
     Ok(Box::new(SequenceRule(get_rules(object, grammar_data)?)))
+}
+
+fn json_to_loop_rule(object: &Value, grammar_data: &GrammarData) -> Result<Box<dyn Rule>, Error> {
+    // min, max, value, separator
+    let rule = json_to_rule(object.get("value").unwrap(), grammar_data)?;
+    let min = object
+        .get("min")
+        .map(|min| min.as_u64().unwrap() as usize)
+        .unwrap_or(0);
+    let max = object
+        .get("max")
+        .map(|max| max.as_u64().unwrap() as usize)
+        .unwrap_or(usize::MAX);
+
+    let separator = object
+        .get("separator")
+        .map(|rule| json_to_rule(rule, grammar_data))
+        .transpose()?;
+
+    Ok(Box::new(LoopRule::new_min_max(rule, min, max, separator)))
 }
 
 fn json_to_or_rule(object: &Value, grammar_data: &GrammarData) -> Result<Box<dyn Rule>, Error> {

@@ -17,6 +17,7 @@ use tauri::api::path::data_dir;
 
 use crate::api::fs::get_disk_entry_from_path;
 use crate::api::grammar::json_to_grammar::json_to_grammar;
+use crate::api::language::json::get_json_grammar;
 
 const APP_DATA_FOLDER_NAME: &str = "Workspace";
 
@@ -38,46 +39,10 @@ async fn log_roaming_data(path_dir: &str) -> Result<String, String> {
 
 fn main() {
     // setup();
-    let grammar = json_to_grammar(json!(
-    {
-        "grammarName": "Test",
-        "tokenDefinitions": {
-            "NUMBER": "[0-9]+",
-            "SPACE": "[ ]+",
-            "DOT": "."
-        },
-        "fragments": {
-            "number": {
-                "rule": {
-                    "type": "or",
-                    "values": [
-                        ["NUMBER", "DOT", "NUMBER"],
-                        "NUMBER",
-                    ]
-                }
-            },
-            "numberSpace": {
-                "rule": [ "number", "space" ]
-            },
-            "numberSpaceOrNumber": {
-                "rule": {
-                    "type": "or",
-                    "values": [
-                        "numberSpace",
-                        "number"
-                    ]
-                }
-            },
-            "space": {
-                    "rule": "SPACE"
-                },
-        }
-    }))
-    .unwrap();
+    let grammar = get_json_grammar();
 
     println!("{:?}", grammar);
-
-    let result = grammar.parse("1.2 21");
+    let result = grammar.parse(r#""te\"st""#);
     match result {
         Some(context) => println!("{:?}", context),
         None => println!("No match"),
